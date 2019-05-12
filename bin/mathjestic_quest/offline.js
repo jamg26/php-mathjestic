@@ -1,0 +1,29 @@
+﻿{
+	"version": 1553764272,
+	"fileList": [
+		"data.js",
+		"c2runtime.js",
+		"jquery-2.1.1.min.js",
+		"offlineClient.js",
+		"images/game_bgsheet-sheet0.png",
+		"images/cursorsheet-sheet0.png",
+		"images/wall-sheet0.png",
+		"images/roof-sheet0.png",
+		"images/bubblesheet-sheet0.png",
+		"images/dots-sheet0.png",
+		"media/bubbounce.m4a",
+		"media/bubbounce.ogg",
+		"media/bubchime.m4a",
+		"media/bubchime.ogg",
+		"media/bubpop.m4a",
+		"media/bubpop.ogg",
+		"media/bubshoot.m4a",
+		"media/bubshoot.ogg",
+		"icon-16.png",
+		"icon-32.png",
+		"icon-114.png",
+		"icon-128.png",
+		"icon-256.png",
+		"loading-logo.png"
+	]
+}

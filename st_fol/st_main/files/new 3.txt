@@ -1,0 +1,356 @@
+<!-- header content -->
+ <?php include ("include/tc_header.php");
+ ?>
+ <!-- header content -->
+  <body class="nav-md footer_fixed">
+    <?php
+	$id = (int) $_SESSION['tc_id'];
+    $query = mysqli_query ($conn, "SELECT * FROM usr_teacher WHERE tc_id = '$id' ") or die (mysqli_error());
+    $fetch = mysqli_fetch_array ($query);
+    ?>
+    <div class="container body">
+      <div class="main_container">
+	    <!-- sidebar content -->
+        <?php include ("include/tc_sidebar.php");
+        ?>
+		<!-- sidebar content -->
+        <!-- top navigation -->
+        <?php include ("include/tc_navigation.php");
+        ?>
+        <!-- /top navigation -->
+	
+        <div class="right_col" role="main">
+			
+		<!-------------------------------------------------------------------------------------------------------------------------------------------->
+        <!-- page content -->
+		
+       <div class="row">
+	        <div class="col-md-12">
+	            <div class="x_panel">
+                    <div class="x_title">
+                    
+              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-chevron-circle-left"></i><a href="tc_student.php?section_id=<?php echo $sectionid;?>"> Previous</a></button>
+            <button type="button" class="btn btn-default btn-xs"><i class="fa fa-home"></i><a href="index.php"> Home</a></button>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+					
+                  </div>
+				  	<?php if(@$_GET['change']=='1'){?>
+                     <div class="x_content">
+					 <center><img src="../images/pces_logo_text.png" alt="img" width="435px" height="35px" ></center>
+					 <center><h2>Grade 6 Section <?php echo  $section_name;?> (Class Record)<small> </small></h2>
+ 
+					 <a href="tc_classrecord.php?change=1&section_id=<?php echo  $sectionid;?>" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Quiz </a>
+					 <a href="tc_classrecord.php?change=2&section_id=<?php echo  $sectionid;?>" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Exam </a>
+					 <a href="#change" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Select Quarter </a>
+					 
+					 </center>
+					 <br>
+					 <p class="text-muted font-13 m-b-30">
+                      DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+                    </p>
+				
+                    <table id="datatable-buttons" class="table table-striped table-bordered">
+                      <thead>
+                        <tr> 
+						<th style="width: 8%">LRN</th>
+                          <th style="width: 5%">Profile</th>
+                          <th style="width: 20%">Student Name</th> 
+						  <th>Quiz</th>  
+						  <th>Total</th>
+						  <th>Remarks</th> 
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+					  		<?php 
+								$query = mysqli_query($conn, "SELECT * FROM `usr_student` where section_id='$sectionid' AND st_entry='Active';") or die(mysqli_error());
+								while($fetch = mysqli_fetch_array($query))
+								{
+										$id = $fetch['st_id'];
+										$lrn = $fetch['LRNnumber'];
+										$photo = $fetch['profile_img'];
+										$lname = $fetch['lastname'];
+										$fname = $fetch['firstname'];
+										$mname = $fetch['middlename'];
+										$fullnames= $fname.' '.$lname.' '.$mname;
+										$fullname= $fname.' '.$lname;
+										$section_id = $fetch['section_id'];
+							?>	
+							
+							
+                        <tr>
+                          <td><?php echo $lrn;?></td> 
+                        
+                          <td><a><span class="image"> <img src="images/profile/<?php echo $photo;?>" alt="img" width="50px" height="50px"></span></a></td> 
+						     <td><?php echo $fullnames;?></td> 
+						   <td>
+						 <?php
+						 if(isset($_GET['quarter'])){
+						$queryquiz = mysqli_query($conn, "SELECT COUNT(quiz_id),SUM(`score`), SUM(`items`), score,items,quiz_id FROM `ct_quiz_records` where student='$id' and quarter='".$_GET['quarter']."';") or die(mysqli_error());
+						 }else
+						 {
+						$queryquiz = mysqli_query($conn, "SELECT COUNT(quiz_id),SUM(`score`), SUM(`items`), score,items,quiz_id FROM `ct_quiz_records` where student='$id' and quarter='".$karun_na_quarter."';") or die(mysqli_error());
+						 
+						 }
+						while($rowquiz = mysqli_fetch_array($queryquiz))
+						{ 
+						$quizscore = $rowquiz['SUM(`score`)']; 
+						$quizitems = $rowquiz['SUM(`items`)'];
+						$counterquiz = $rowquiz['COUNT(quiz_id)'];
+						if($quizscore==null && $quizitems==null)
+						{
+							echo '0';
+						}else
+						{
+							echo $quizscore / $counterquiz;
+						} 
+						}
+						?>
+						</td>
+					 
+						 
+						<td>
+						 <?php echo $totalaverage=$quizscore / 2 ; ?>
+						</td>
+							<td>
+							<?php
+						 
+						if($totalaverage < 74.4)
+						{
+							echo 'FAILED';
+						}else if($totalaverage > 74.5)
+						{
+							echo 'PASSED'; 
+						} 
+						?>
+						</td> 
+						
+						</tr>
+								<?php } ?>
+                      </tbody>
+                    </table> 
+                  </div>
+				  	<?php } ?> 
+
+					<?php if(@$_GET['change']=='2'){?>
+                     <div class="x_content">
+					 <center><img src="../images/pces_logo_text.png" alt="img" width="435px" height="35px" ></center>
+					 <center><h2>Grade 6 Section <?php echo  $section_name;?> (Class Record)<small> </small></h2>
+ 
+					 <a href="tc_classrecord.php?change=1&section_id=<?php echo  $sectionid;?>" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Quiz </a>
+					 <a href="tc_classrecord.php?change=2&section_id=<?php echo  $sectionid;?>" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Exam </a>
+					 <a href="#change" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Select Quarter </a>
+					 
+					 </center>
+					 <br>
+					 <p class="text-muted font-13 m-b-30">
+                      DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+                    </p>
+				
+                    <table id="datatable-buttons" class="table table-striped table-bordered">
+                      <thead>
+                        <tr> 
+						<th style="width: 8%">LRN</th>
+                          <th style="width: 5%">Profile</th>
+                          <th style="width: 20%">Student Name</th> 
+						  <th>Quiz</th>  
+						  <th>Total</th>
+						  <th>Remarks</th> 
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+					  		<?php 
+								$query = mysqli_query($conn, "SELECT * FROM `usr_student` where section_id='$sectionid' AND st_entry='Active';") or die(mysqli_error());
+								while($fetch = mysqli_fetch_array($query))
+								{
+										$id = $fetch['st_id'];
+										$lrn = $fetch['LRNnumber'];
+										$photo = $fetch['profile_img'];
+										$lname = $fetch['lastname'];
+										$fname = $fetch['firstname'];
+										$mname = $fetch['middlename'];
+										$fullnames= $fname.' '.$lname.' '.$mname;
+										$fullname= $fname.' '.$lname;
+										$section_id = $fetch['section_id'];
+							?>	
+							
+							
+                        <tr>
+                          <td><?php echo $lrn;?></td> 
+                        
+                          <td><a><span class="image"> <img src="images/profile/<?php echo $photo;?>" alt="img" width="50px" height="50px"></span></a></td> 
+						     <td><?php echo $fullnames;?></td> 
+				<td>
+						 <?php
+						  	 if(isset($_GET['quarter'])){
+						$queryexam = mysqli_query($conn, "SELECT COUNT(exam_id),SUM(`score`), SUM(`items`), score,items FROM `ct_exam_records` where student='$id' and quarter='".$_GET['quarter']."';") or die(mysqli_error());
+							 }else{
+						$queryexam = mysqli_query($conn, "SELECT COUNT(exam_id),SUM(`score`), SUM(`items`), score,items FROM `ct_exam_records` where student='$id' and quarter='".$karun_na_quarter."';") or die(mysqli_error());
+							 }
+						while($rowexam = mysqli_fetch_array($queryexam))
+						{ 
+						$examscore = $rowexam['SUM(`score`)']; 
+						$examitems = $rowexam['SUM(`items`)'];
+						$counterexam = $rowexam['COUNT(exam_id)'];
+						if($examscore==null && $examitems==null)
+						{
+							echo '0';
+						}else
+						{
+							echo $examscore / $counterexam;
+						}
+						
+						}
+						?>
+						</td>
+					 
+						 
+						<td>
+						 <?php echo $totalaverage=$examscore / 2 ; ?>
+						</td>
+							<td>
+							<?php
+						 
+						if($totalaverage < 74.4)
+						{
+							echo 'FAILED';
+						}else if($totalaverage > 74.5)
+						{
+							echo 'PASSED'; 
+						} 
+						?>
+						</td> 
+						
+						</tr>
+								<?php } ?>
+                      </tbody>
+                    </table> 
+                  </div>
+				  	<?php } ?>
+					
+					
+              </div>
+            </div>
+              </div>
+			  <br>
+			  
+			  <?php 
+								$query = mysqli_query($conn, "SELECT * FROM `usr_student` where section_id='$sectionid' AND st_entry='Active';") or die(mysqli_error());
+								while($fetch = mysqli_fetch_array($query))
+								{
+											$id = $fetch['st_id'];
+										$lrn = $fetch['LRNnumber'];
+										$photo = $fetch['profile_img'];
+										$lname = $fetch['lastname'];
+										$fname = $fetch['firstname'];
+										$fullname= $fname.' '.$lname;
+										$section_id = $fetch['section_id'];
+										$sitnumber = $fetch['seat_num'];
+								 
+							?>		
+				  	
+					
+					<div class="modal fade" id="edita<?php echo $id;?>" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span>
+                          </button>
+                          <h4 class="modal-title" id="myModalLabel2">Select Quarter</h4>
+                        </div>
+                        <div class="modal-body">  
+                    <br>
+                    <form class="form-horizontal form-label-left input_mask" action="function/add_sitnumber.php" method="POST">
+
+                      <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+                        <input type="hidden" class="form-control" id="" name="idsastudent" value="<?php echo $id;?>" placeholder="ID" required>
+                     
+                   <input type="number" class="form-control" id="" name="sitnumber" value="<?php echo $sitnumber;?>" placeholder="Seat Number" required>
+                   <input type="hidden" class="form-control" id="" name="section_id" value="<?php echo $sectionid;?>" placeholder="section_id" required>
+                    </div> 
+					   </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="submit" name="btnsitnumber" class="btn btn-primary">Submit</button>
+                        </div>
+					</form> 
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /modals -->
+								<?php } ?>
+			  
+			  	<div class="modal fade" id="change" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-sm">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span>
+                          </button>
+                          <h4 class="modal-title" id="myModalLabel2">Select Quarter</h4>
+                        </div>
+                        <div class="modal-body">  
+                    <br>
+                    <form class="form-horizontal form-label-left input_mask">
+
+                      <div class="col-md-12 col-sm-12 col-xs-12 form-group">
+                        <input type="hidden" class="form-control" name="section_id" value="<?php echo $sectionid;?>" required>
+                        <input type="hidden" class="form-control" name="change" value="<?php echo $_GET['change'];?>" required>
+						 <label>Add Quarter	</label>
+						<select class="form-control" name="quarter" required>
+						<option value="">Choose </option> 
+						<option value="1">First Quarter</option> 
+						<option value="2">Second Quarter</option> 
+						<option value="3">Third Quarter</option> 
+						<option value="4">Fourth Quarter</option>  
+                          </select>
+						</div> 
+						
+					   </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+					</form> 
+                      </div>
+                    </div>
+                  </div>
+		  
+     
+		
+        <!-- /page content -->
+		<!-------------------------------------------------------------------------------------------------------------------------------------------->
+		   </div>
+		
+		
+        <!-- footer content -->
+        <?php include ("include/tc_footer.php");
+        ?>
+        <!-- /footer content -->
+      </div>
+    </div>
+    <!-- script content -->
+    <?php include ("include/tc_script.php");
+    ?>
+    <!-- /script content -->
+  </body>
+</html>

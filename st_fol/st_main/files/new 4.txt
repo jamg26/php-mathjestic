@@ -1,0 +1,65 @@
+        <tbody>
+					  		<?php 
+								$query = mysqli_query($conn, "SELECT * FROM `usr_student` where section_id='$sectionid' AND st_entry='Active';") or die(mysqli_error());
+								while($fetch = mysqli_fetch_array($query))
+								{
+										$id = $fetch['st_id'];
+										$lrn = $fetch['LRNnumber'];
+										$photo = $fetch['profile_img'];
+										$lname = $fetch['lastname'];
+										$fname = $fetch['firstname'];
+										$mname = $fetch['middlename'];
+										$fullnames= $fname.' '.$lname.' '.$mname;
+										$fullname= $fname.' '.$lname;
+										$section_id = $fetch['section_id'];
+							?>	
+							
+							
+                        <tr>
+                          <td><?php echo $lrn;?></td> 
+                        
+                          <td><a><span class="image"> <img src="images/profile/<?php echo $photo;?>" alt="img" width="50px" height="50px"></span></a></td> 
+						     <td><?php echo $fullnames;?></td> 
+					 
+						 <?php
+						  	 if(isset($_GET['quarter'])){
+						$queryexam = mysqli_query($conn, "SELECT COUNT(exam_id),SUM(`score`), SUM(`items`), score,items FROM `ct_exam_records` where student='$id' and quarter='".$_GET['quarter']."';") or die(mysqli_error());
+							 }else{
+						$queryexam = mysqli_query($conn, "SELECT COUNT(exam_id),SUM(`score`), SUM(`items`), score,items FROM `ct_exam_records` where student='$id' and quarter='".$karun_na_quarter."';") or die(mysqli_error());
+							 }
+						while($rowexam = mysqli_fetch_array($queryexam))
+						{ 
+						$examscore = $rowexam['SUM(`score`)']; 
+						$examitems = $rowexam['SUM(`items`)'];
+						$counterexam = $rowexam['COUNT(exam_id)'];
+						if($examscore==null && $examitems==null)
+						{
+							echo '0';
+						}else
+						{
+							echo $examscore / $counterexam;
+						}
+						
+						}
+						?>
+						</td>
+						<td>
+						 <?php echo $totalaverage= $examscore / 2 ; ?>
+						</td>
+							<td>
+							<?php
+						 
+						if($totalaverage < 74.4)
+						{
+							echo 'FAILED';
+						}else if($totalaverage > 74.5)
+						{
+							echo 'PASSED'; 
+						} 
+						?>
+						</td>
+				 
+						
+						</tr>
+								<?php } ?>
+                      </tbody>

@@ -1,0 +1,406 @@
+<!-- header content -->
+ <?php include ("include/tc_header.php");
+ error_reporting(0);
+ ?>
+ <!-- header content -->
+  <body class="nav-md footer_fixed">
+    <?php
+	$id = (int) $_SESSION['tc_id'];
+    $query = mysqli_query ($conn, "SELECT * FROM usr_teacher WHERE tc_id = '$id' ") or die (mysqli_error());
+    $fetch = mysqli_fetch_array ($query);
+    ?>
+    <div class="container body">
+      <div class="main_container">
+	    <!-- sidebar content -->
+        <?php include ("include/tc_sidebar.php");
+        ?>
+		<!-- sidebar content -->
+        <!-- top navigation -->
+        <?php include ("include/tc_navigation.php");
+        ?>
+        <!-- /top navigation -->
+	
+        <div class="right_col" role="main">
+			
+		<!-------------------------------------------------------------------------------------------------------------------------------------------->
+        <!-- page content -->
+		
+       <div class="row">
+	        <div class="col-md-12">
+	            <div class="x_panel">
+                    <div class="x_title">
+                    
+              <button type="button" class="btn btn-default btn-xs"><i class="fa fa-chevron-circle-left"></i><a href="tc_classrecord.php?change=1&section_id=<?php echo  $sectionid;?>&quarter=<?php echo $karun_na_quarter;?>"> Previous</a></button>
+            <button type="button" class="btn btn-default btn-xs"><i class="fa fa-home"></i><a href="index.php"> Home</a></button>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                        <ul class="dropdown-menu" role="menu">
+                          <li><a href="#">Settings 1</a>
+                          </li>
+                          <li><a href="#">Settings 2</a>
+                          </li>
+                        </ul>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+					
+                  </div> 
+                     <div class="x_content">
+					 <center><img src="../images/pces_logo_text.png" alt="img" width="435px" height="35px" ></center>
+					 <center><h2>Grade 6 Section <?php echo  $section_name;?> (Grades)<small> </small></h2>
+ 
+				 <a href="tc_grades.php?section_id=<?php echo $_GET['section_id'];?>&quarter=1" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> First Quarter </a>
+				 <a href="tc_grades.php?section_id=<?php echo $_GET['section_id'];?>&quarter=2" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Second Quarter </a>
+				 <a href="tc_grades.php?section_id=<?php echo $_GET['section_id'];?>&quarter=3" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Third Quarter </a>
+				 <a href="tc_grades.php?section_id=<?php echo $_GET['section_id'];?>&quarter=4" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Fourth Quarter </a>
+				 <a href="tc_grades.php?section_id=<?php echo $_GET['section_id'];?>&quarter=All" data-toggle="modal" class="btn btn-success"></i><i class="fa fa-folder-open-o"></i> Final Grades </a>
+					 
+					 </center>
+					 <br>
+					 <p class="text-muted font-13 m-b-30">
+                      DataTables has most features enabled by default, so all you need to do to use it with your own tables is to call the construction function: <code>$().DataTable();</code>
+                    </p>
+				
+                    <table id="datatable-buttons" class="table table-striped table-bordered">
+                      <thead>
+                        <tr>  
+                          <th style="width: 10%">Student Name</th>
+                          <th style="width: 10%">	WRITTEN TASK (20%)</th>
+                          <th style="width: 10%">	PERFORMANCE TASK (40%)</th> 
+                          <th style="width: 10%">	Quarterly Assessment (40%)</th> 
+                          <th style="width: 10%">	Initial Grade</th> 
+                          <th style="width: 10%">	Quarterly Grade</th>  
+ 				 
+						  
+                        </tr>
+                      </thead>
+
+
+                      <tbody>
+					  		<?php 
+								$query = mysqli_query($conn, "SELECT * FROM `usr_student` where section_id='".$sectionid."' AND st_entry='Active';") or die(mysqli_error());
+								while($fetch = mysqli_fetch_array($query))
+								{
+										$idniya = $fetch['st_id']; 
+										$fullname= $fetch['firstname'].' '.$fetch['lastname']; 
+							?>	
+							
+							
+                        <tr>
+                          <td><?php echo $fullname;?></td> 
+						  
+							<td style="font-size:20px;">
+							<?php 
+							$querysascore = mysqli_query($conn, "SELECT score FROM `ct_written_task` WHERE student_ID='".$idniya."' and quarter='".$_GET['quarter']."';") or die(mysqli_error());
+				  	 
+					
+					if(mysqli_num_rows($querysascore) > 0)
+					{
+						while($rowes = mysqli_fetch_assoc($querysascore))
+					{
+						
+						echo $valuesawritten=$rowes['score']; 
+					}
+					}
+					else
+					{
+						$valuesawritten='0';
+					}
+								
+							 if($valuesawritten=='0')
+								 { 	 
+							 ?>
+							 
+							&nbsp;<a href="#addwrittentask<?php echo $idniya;?>" data-toggle="modal" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i></a> 
+						
+						<?php } else { ?>
+							
+							&nbsp;<a href="#editwrittentask<?php echo $idniya;?>" data-toggle="modal" class="btn btn-success btn-xs"><i class="fa fa-edit"></i></a> 
+
+							<?php } ?>
+							</td> 
+                       <td>
+						 <?php 
+						 
+						$queryquiz = mysqli_query($conn, "SELECT  SUM(`score`), SUM(`items`) FROM `ct_quiz_records` where student='".$idniya."' and quarter='".$_GET['quarter']."';") or die(mysqli_error());
+						 
+						while($rowquiz = mysqli_fetch_array($queryquiz))
+						{ 
+						@$quizscore = $rowquiz['SUM(`score`)']; 
+					    @$quizitems = $rowquiz['SUM(`items`)']; 
+						}
+						if($quizscore==null && $quizitems==null)
+						{
+							echo '';
+						}else
+						{ 
+							 
+							echo $scoreinquiz = $quizscore / $quizitems * 40;
+						}
+						?>
+						</td>  
+                          <td>
+						  <?php 
+						$queryexam = mysqli_query($conn, "SELECT SUM(`score`), SUM(`items`) FROM `ct_exam_records` where student='".$idniya."' and quarter='".$_GET['quarter']."';") or die(mysqli_error());
+					 
+						while($rowexam = mysqli_fetch_array($queryexam))
+						{ 
+						@$examscore = $rowexam['SUM(`score`)']; 
+						@$examitems = $rowexam['SUM(`items`)']; 
+						}
+						if($examscore=='' && $examitems=='')
+						{
+							echo '';
+						}else
+						{
+							 
+							echo $scoreinexam = $examscore / $examitems * 40;
+						}
+						?>
+						  
+						  </td>  
+                          <td> 
+						  <?php  
+						   //$finalgrade= 0 + 0 + 0;
+						   $finalgrade= $valuesawritten + $scoreinquiz + @$scoreinexam;
+						  
+						  //transmuted
+															if($finalgrade == 100)
+															{
+																$transmuted = 100;
+															}
+															else if($finalgrade >= 98.40)
+															{
+																$transmuted = 99;
+															}
+															else if($finalgrade >= 96.80)
+															{
+																$transmuted = 98;
+															}
+															else if($finalgrade >= 95.20)
+															{
+																$transmuted = 97;
+															}
+															else if($finalgrade >= 93.69)
+															{
+																$transmuted = 96;
+															}
+															else if($finalgrade >=92.00)
+															{
+																$transmuted = 95;
+															}
+															else if($finalgrade >= 90.40)
+															{
+																$transmuted = 94;
+															}
+															else if($finalgrade >= 88.80)
+															{
+																$transmuted = 93;
+															}
+															else if($finalgrade >= 87.20)
+															{
+																$transmuted = 92;
+															}
+															else if($finalgrade >= 85.60)
+															{
+																$transmuted = 91;
+															}
+															else if($finalgrade >= 84.00)
+															{
+																$transmuted = 90;
+															}
+															else if($finalgrade >= 82.40)
+															{
+																$transmuted = 89;
+															}
+															else if($finalgrade >= 80.80)
+															{
+																$transmuted = 88;
+															}
+															else if($finalgrade >= 79.20)
+															{
+																$transmuted = 87;
+															}
+															else if($finalgrade >= 77.60)
+															{
+																$transmuted = 86;
+															}
+															else if($finalgrade >= 74.40 )
+															{
+																$transmuted = 84;
+															}
+															else if($finalgrade >= 72.80)
+															{
+																$transmuted = 83;
+															}
+															else if($finalgrade >= 71.20)
+															{
+																$transmuted = 82;
+															}
+															else if($finalgrade >= 69.60)
+															{
+																$transmuted = 81;
+															}
+															else if($finalgrade >= 68.00)
+															{
+																$transmuted = 80;
+															}
+															else if($finalgrade >= 66.40)
+															{
+																$transmuted = 79;
+															}
+															else if($finalgrade >= 64.80)
+															{
+																$transmuted = 78;
+															}
+															else if($finalgrade >= 63.20)
+															{
+																$transmuted = 77;
+															}
+															else if($finalgrade >= 61.60)
+															{
+																$transmuted = 76;
+															}
+															else if($finalgrade >= 60.00)
+															{
+																$transmuted = 75;
+															}
+															else if($finalgrade >= 56.00)
+															{
+																$transmuted = 74;
+															}
+															else if($finalgrade >= 52.00)
+															{
+																$transmuted = 73;
+															}
+															else if($finalgrade >= 48.00)
+															{
+																$transmuted = 72;
+															}
+															else if($finalgrade >= 44.00)
+															{
+																$transmuted = 71;
+															}
+															else if($finalgrade >= 40.00)
+															{
+																$transmuted = 70;
+															}
+															else if($finalgrade >= 36.00)
+															{
+																$transmuted = 68;
+															}
+															else if($finalgrade >= 32.00)
+															{
+																$transmuted = 67;
+															}
+															else if($finalgrade >= 28.00)
+															{
+																$transmuted = 67;
+															}
+															else if($finalgrade >= 24.00)
+															{
+																$transmuted = 66;
+															}
+															else if($finalgrade >= 20.00)
+															{
+																$transmuted = 65;
+															}
+															else if($finalgrade >= 16.00)
+															{
+																$transmuted = 64;
+															}
+															else if($finalgrade >= 12.00)
+															{
+																$transmuted = 63;
+															}
+															else if($finalgrade >= 8)
+															{
+																$transmuted = 62;
+															}
+															else if($finalgrade >= 4)
+															{
+																$transmuted = 61;
+															}
+															else
+															{
+																$transmuted = 60;
+															}
+														echo $finalgrade;
+						  ?> 
+						  </td>  
+                         	<td><?php echo $transmuted; ?></td>
+						  <!-- score / items X .40% -->
+						
+						</tr>
+								<?php } ?>
+                      </tbody>
+                    </table> 
+                  </div> 
+
+					 
+              </div>
+            </div>
+              </div>
+			  <br>
+			  
+<?php 
+$querysastudent = mysqli_query($conn, "SELECT * FROM `usr_student` where section_id='$sectionid' AND st_entry='Active';") or die(mysqli_error());
+while($havefun = mysqli_fetch_array($querysastudent))
+{
+$idsastudent = $havefun['st_id'];  
+?>	 
+<div class="modal fade" id="addwrittentask<?php echo $idsastudent;?>" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal-dialog modal-sm">
+<div class="modal-content"> 
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span>
+</button>
+<h4 class="modal-title" id="myModalLabel2">Add written task score</h4>
+</div>
+<div class="modal-body">  
+<br>
+<form class="form-horizontal form-label-left input_mask" action="function/add_addwrittenscore.php" method="POST"> 
+<div class="col-md-12 col-sm-12 col-xs-12 form-group">
+<input type="hidden" class="form-control" id="" name="idsastudent" value="<?php echo $idsastudent;?>" placeholder="ID" required>
+<label>Score</label>
+<input type="text" class="form-control" id="" name="writtengrade" value="" placeholder="Enter here" required>
+<input type="hidden" class="form-control" id="" name="section_id" value="<?php echo $sectionid;?>" placeholder="section_id" required>
+<input type="hidden" class="form-control" id="" name="quarter" value="<?php echo $_GET['quarter'];?>" placeholder="section_id" required>
+</div> 
+</div>
+<div class="modal-footer">	
+<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+<button type="submit" name="btnwritten" class="btn btn-primary">Submit</button>
+</div>
+</form> 
+</div>
+</div>
+</div>
+<!-- /modals -->
+<?php } ?>
+
+		  
+     
+		
+        <!-- /page content -->
+		<!-------------------------------------------------------------------------------------------------------------------------------------------->
+		   </div>
+		
+		
+        <!-- footer content -->
+        <?php include ("include/tc_footer.php");
+        ?>
+        <!-- /footer content -->
+      </div>
+    </div>
+    <!-- script content -->
+    <?php include ("include/tc_script.php");
+    ?>
+    <!-- /script content -->
+  </body>
+</html>
