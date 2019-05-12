@@ -1,5 +1,5 @@
 ﻿{
-	"version": 1554708059,
+	"version": 1557648822,
 	"fileList": [
 		"data.js",
 		"c2runtime.js",
@@ -33,6 +33,7 @@
 		"images/spritefont.png",
 		"images/sprite-sheet0.png",
 		"images/sprite2-sheet0.png",
+		"images/sprite3-sheet0.png",
 		"media/bubbounce.m4a",
 		"media/bubbounce.ogg",
 		"media/bubchime.m4a",

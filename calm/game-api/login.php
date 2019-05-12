@@ -1,8 +1,8 @@
 <?php 
     header("Access-Control-Allow-Origin: *");
     include '../../dbconnect/dbconn.php'; 
-    if (isset($_POST['username']))
-	{
+        if (isset($_POST['username']))
+        {
 		$username=$_POST['username'];
 		$password=$_POST['password'];
 
