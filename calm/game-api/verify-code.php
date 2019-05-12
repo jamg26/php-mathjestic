@@ -12,9 +12,15 @@
             
         if ($run_num_rows > 0 )
         {
+            $sql = "UPDATE usr_student SET ".$_POST['quarter']."='true' WHERE username='".$_POST['user']."'";
+            if (mysqli_query($conn, $sql)) {
+                //echo "Record updated successfully";
+            } else {
+                //echo "Error updating record: " . mysqli_error($conn);
+            }
+            //mysqli_close($conn);
             echo "true";
         }
-        
         else
         {
             echo "false";
